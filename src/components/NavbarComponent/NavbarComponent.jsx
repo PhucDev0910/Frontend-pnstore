@@ -62,8 +62,12 @@ const NavBarComponent = () => {
   return (
     <div>
       <WrapperLableText>Danh Sách Khác</WrapperLableText>
-      <WrapperContent style={{cursor: "pointer"}} onClick={() => navigate("/")}>
+      <WrapperContent
+        style={{ cursor: "pointer" }}
+        onClick={() => navigate("/")}
+      >
         {renderContent("text", ["Quần", "Áo", "Giày"])}
+        <p style={{ color: "blue" }}>Xem Thêm</p>
       </WrapperContent>
     </div>
   );

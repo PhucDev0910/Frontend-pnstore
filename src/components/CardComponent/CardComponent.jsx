@@ -12,7 +12,6 @@ import {
     StarFilled
 } from '@ant-design/icons';
 import logo from '../../assets/images/logo.png'
-import STye from '../../assets/images/quan.jpg'
 import {convertPrice} from '../../utils'
 import { useNavigate } from "react-router-dom";
 
@@ -25,9 +24,9 @@ const CardComponent = (props) => {
     return (
       <WrapperCardStyle
         hoverable
-        //headStyle={{width: '200px', height: '200px'}}
+        headStyle={{width: '200px', height: '200px'}}
         style={{ width: 200 }}
-        //bodyStyle={{ padding: '10px'}}
+        bodyStyle={{ padding: '10px'}}
         cover={<img alt="example" src={image} />}
         onClick={() => handleDetailsProduct(id)}
       >
@@ -41,7 +40,7 @@ const CardComponent = (props) => {
             />
           </span>
           <WrapperStyleTextSell>
-            | Da ban {selled || 1000}+
+            | Đã bán {selled || 1000}+
           </WrapperStyleTextSell>
         </WrapperReportProduct>
         <WrapperPriceText>
