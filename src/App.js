@@ -1,42 +1,41 @@
-import React, {Fragment} from 'react'
-import {useEffect, useState} from "react";
-import {BrowserRouter as Router, Routes, Route} from 'react-router-dom'
-import {routes} from "./routes";
+import React, { Fragment } from "react";
+import { useEffect, useState } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { routes } from "./routes";
 import DefaultComponent from "./components/DefaultComponent/DefaultComponent";
-import {isJsonString} from "./utils";
-import {jwtDecode} from 'jwt-decode'
-import * as UserService from './services/UserService'
-import { useDispatch } from 'react-redux'
-import { updateUser, resetUser } from './redux/slides/userSlide'
-import { useSelector } from 'react-redux'
-import Loading from './components/LoadingComponent/Loading'
-
+import { isJsonString } from "./utils";
+import { jwtDecode } from "jwt-decode";
+import * as UserService from "./services/UserService";
+import { useDispatch } from "react-redux";
+import { updateUser, resetUser } from "./redux/slides/userSlide";
+import { useSelector } from "react-redux";
+import Loading from "./components/LoadingComponent/Loading";
 
 function App() {
-     const dispatch = useDispatch()
-     const user  = useSelector((state) => state.user)
-    const [isLoading, setIsLoading] = useState(false)
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.user);
+  const [isLoading, setIsLoading] = useState(false);
 
-    useEffect(() => {
-        setIsLoading(true)
-        const {storageData, decoded} =  handleDecoded()
-          if(decoded?.id) {
-            handleGetDetailsUser(decoded?.id, storageData)
-          }
-          setIsLoading(false)
-    }, [])
-
-    const handleDecoded = () => {
-          let storageData =  localStorage.getItem('access_token')
-          let decoded = {}
-            if(storageData && isJsonString(storageData)) {
-            storageData = JSON.parse(storageData)
-                decoded = jwtDecode(storageData)
-            }
-            return {decoded, storageData}
+  useEffect(() => {
+    setIsLoading(true);
+    const { storageData, decoded } = handleDecoded();
+    if (decoded?.id) {
+      handleGetDetailsUser(decoded?.id, storageData);
     }
+    setIsLoading(false);
+  }, []);
 
-    /*  xử lý tác vụ khi token hết hạn
+  const handleDecoded = () => {
+    let storageData = localStorage.getItem("access_token");
+    let decoded = {};
+    if (storageData && isJsonString(storageData)) {
+      storageData = JSON.parse(storageData);
+      decoded = jwtDecode(storageData);
+    }
+    return { decoded, storageData };
+  };
+
+  /*  xử lý tác vụ khi token hết hạn
         ở phần cookie trả về một refresh-token
         dùng refresh_token đó để xử lý cấp lại một token mới
         và đấp vào access_token cũ
@@ -44,96 +43,103 @@ function App() {
         currentTime / 1000: lấy thời gian hiện tại chia cho 1000
         = bắt đầu xử lý refresh_token ở cookie để cấp lại token mới
     */
-    UserService.axiosJWT.interceptors.request.use(async (config) => {
-        // Do something before request is sent
-        const currentTime = new Date()
-        const {decoded} =  handleDecoded()
-        if(decoded?.exp < currentTime.getTime() / 1000) {
-            const data = await UserService.refreshToken()
-            config.headers['token'] = `Bearer ${data?.access_token}`
-        }else {
-         dispatch(resetUser())
+  UserService.axiosJWT.interceptors.request.use(
+    async (config) => {
+      // Do something before request is sent
+      const currentTime = new Date();
+      const { decoded } = handleDecoded();
+      if (decoded?.exp < currentTime.getTime() / 1000) {
+        const data = await UserService.refreshToken();
+        config.headers["token"] = `Bearer ${data?.access_token}`;
+      } else {
+        dispatch(resetUser());
       }
-        return config;
-     }, function (error) {
-        return Promise.reject(error);
-    });
-
-     const handleGetDetailsUser = async (id, token) => {
-            const res = await UserService.getDetailsUser(id, token)
-            dispatch(updateUser({ ...res?.data, access_token: token }))
+      return config;
+    },
+    function (error) {
+      return Promise.reject(error);
     }
+  );
 
-//     const dispatch = useDispatch();
-//     const [isLoading, setIsLoading] = useState(false)
-//     const user = useSelector((state) => state.user)
+  const handleGetDetailsUser = async (id, token) => {
+    const res = await UserService.getDetailsUser(id, token);
+    dispatch(updateUser({ ...res?.data, access_token: token }));
+  };
 
-//     useEffect(() => {
-//         setIsLoading(true)
-//             const { storageData, decoded } = handleDecoded()
-//         if (decoded?.id) {
-//             handleGetDetailsUser(decoded?.id, storageData)
-//      }
-//     setIsLoading(false)
-//   }, [])
+  //     const dispatch = useDispatch();
+  //     const [isLoading, setIsLoading] = useState(false)
+  //     const user = useSelector((state) => state.user)
 
-//   const handleDecoded = () => {
-//     let storageData = user?.access_token || localStorage.getItem('access_token')
-//     let decoded = {}
-//     if (storageData && isJsonString(storageData) && !user?.access_token) {
-//       storageData = JSON.parse(storageData)
-//       decoded = jwtDecode(storageData)
-//     }
-//     return { decoded, storageData }
-//   }
+  //     useEffect(() => {
+  //         setIsLoading(true)
+  //             const { storageData, decoded } = handleDecoded()
+  //         if (decoded?.id) {
+  //             handleGetDetailsUser(decoded?.id, storageData)
+  //      }
+  //     setIsLoading(false)
+  //   }, [])
 
-//   UserService.axiosJWT.interceptors.request.use(async (config) => {
-//     // Do something before request is sent
-//     const currentTime = new Date()
-//     const { decoded } = handleDecoded()
-//     let storageRefreshToken = localStorage.getItem('refresh_token')
-//     const refreshToken = JSON.parse(storageRefreshToken)
-//     const decodedRefreshToken =  jwtDecode(refreshToken)
-//     if (decoded?.exp < currentTime.getTime() / 1000) {
-//       if(decodedRefreshToken?.exp > currentTime.getTime() / 1000) {
-//         const data = await UserService.refreshToken(refreshToken)
-//         config.headers['token'] = `Bearer ${data?.access_token}`
-//       }else {
-//         dispatch(resetUser())
-//       }
-//     }
-//     return config;
-//   }, (err) => {
-//     return Promise.reject(err)
-//   })
+  //   const handleDecoded = () => {
+  //     let storageData = user?.access_token || localStorage.getItem('access_token')
+  //     let decoded = {}
+  //     if (storageData && isJsonString(storageData) && !user?.access_token) {
+  //       storageData = JSON.parse(storageData)
+  //       decoded = jwtDecode(storageData)
+  //     }
+  //     return { decoded, storageData }
+  //   }
 
-//   const handleGetDetailsUser = async (id, token) => {
-//     let storageRefreshToken = localStorage.getItem('refresh_token')
-//     const refreshToken = JSON.parse(storageRefreshToken)
-//     const res = await UserService.getDetailsUser(id, token)
-//     dispatch(updateUser({ ...res?.data, access_token: token, refreshToken: refreshToken}))
-//   }
-    return (
-    <div style={{height: '100vh', width: '100%'}}>
-        <Loading isLoading={isLoading}>
+  //   UserService.axiosJWT.interceptors.request.use(async (config) => {
+  //     // Do something before request is sent
+  //     const currentTime = new Date()
+  //     const { decoded } = handleDecoded()
+  //     let storageRefreshToken = localStorage.getItem('refresh_token')
+  //     const refreshToken = JSON.parse(storageRefreshToken)
+  //     const decodedRefreshToken =  jwtDecode(refreshToken)
+  //     if (decoded?.exp < currentTime.getTime() / 1000) {
+  //       if(decodedRefreshToken?.exp > currentTime.getTime() / 1000) {
+  //         const data = await UserService.refreshToken(refreshToken)
+  //         config.headers['token'] = `Bearer ${data?.access_token}`
+  //       }else {
+  //         dispatch(resetUser())
+  //       }
+  //     }
+  //     return config;
+  //   }, (err) => {
+  //     return Promise.reject(err)
+  //   })
+
+  //   const handleGetDetailsUser = async (id, token) => {
+  //     let storageRefreshToken = localStorage.getItem('refresh_token')
+  //     const refreshToken = JSON.parse(storageRefreshToken)
+  //     const res = await UserService.getDetailsUser(id, token)
+  //     dispatch(updateUser({ ...res?.data, access_token: token, refreshToken: refreshToken}))
+  //   }
+  return (
+    <div style={{ height: "100vh", width: "100%" }}>
+      <Loading isLoading={isLoading}>
         <Router>
-            <Routes>
-                {routes.map((route) => {
-                    const Page = route.page
-                    //const ischeckAuth = !route.isPrivate || user.isAdmin
-                    const Layout = route.isShowHeader ? DefaultComponent: Fragment
-                    return (
-                            <Route key={route.path} path={route.path} element={
-                            <Layout>
-                                <Page />
-                            </Layout>
-                        }/>
-                    )
-                })}
-            </Routes>
+          <Routes>
+            {routes.map((route) => {
+              const Page = route.page;
+              //const ischeckAuth = !route.isPrivate || user.isAdmin
+              const Layout = route.isShowHeader ? DefaultComponent : Fragment;
+              return (
+                <Route
+                  key={route.path}
+                  path={route.path}
+                  element={
+                    <Layout>
+                      <Page />
+                    </Layout>
+                  }
+                />
+              );
+            })}
+          </Routes>
         </Router>
-        </Loading>
+      </Loading>
     </div>
-  )
+  );
 }
-export default App
+export default App;
