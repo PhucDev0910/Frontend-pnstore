@@ -126,6 +126,7 @@ const ProductDetailsComponent = ({ idProduct }) => {
               product: productDetails?._id,
               discount: productDetails?.discount,
               countInstock: productDetails?.countInStock,
+              selled: productDetails?.selled
             },
           })
         );
@@ -166,7 +167,7 @@ const ProductDetailsComponent = ({ idProduct }) => {
               defaultValue={productDetails?.rating}
               value={productDetails?.rating}
             />
-            <WrapperStyleTextSell> | {selled || 1000}+</WrapperStyleTextSell>
+            <WrapperStyleTextSell> | {productDetails?.selled}+</WrapperStyleTextSell>
           </div>
           <WrapperPriceProduct>
             <WrapperPriceTextProduct>
