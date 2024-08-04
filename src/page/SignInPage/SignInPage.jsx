@@ -170,7 +170,7 @@ const SignInPage = () => {
             height="203px"
             width="203px"
           />
-          <h4>Mua sắm tại LTTD</h4>
+          <h4>Mua sắm tại PN STORE</h4>
         </WrapperContainerRight>
       </div>
     </div>
