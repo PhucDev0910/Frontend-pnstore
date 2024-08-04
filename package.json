@@ -14,7 +14,7 @@
     "axios": "^1.7.2",
     "client": "file:",
     "dotenv": "^16.4.5",
-    "jwt-decode": "^4.0.0",
+    "jwt-decode": "^3.1.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-query": "^3.39.3",
@@ -52,5 +52,5 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "https://backend-shop-9l17.onrender.com"
+  "proxy": "http://localhost:3001"
 }
