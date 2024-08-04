@@ -154,8 +154,7 @@ const ProductDetailsComponent = ({ idProduct }) => {
             alt="image prodcut"
             preview={false}
           />
-          <Row style={{ paddingTop: "10px"}}>
-          </Row>
+          <Row style={{ paddingTop: "10px" }}></Row>
         </Col>
         <Col span={14} style={{ paddingLeft: "10px" }}>
           <WrapperStyleNameProduct>
@@ -167,7 +166,7 @@ const ProductDetailsComponent = ({ idProduct }) => {
               defaultValue={productDetails?.rating}
               value={productDetails?.rating}
             />
-            <WrapperStyleTextSell> | Da ban 1000+</WrapperStyleTextSell>
+            <WrapperStyleTextSell> | {selled || 1000}+</WrapperStyleTextSell>
           </div>
           <WrapperPriceProduct>
             <WrapperPriceTextProduct>
@@ -235,7 +234,7 @@ const ProductDetailsComponent = ({ idProduct }) => {
             <div>
               <ButtonComponent
                 size={40}
-                styleButton={{  
+                styleButton={{
                   background: "rgb(255, 57, 69)",
                   height: "48px",
                   width: "220px",
@@ -255,7 +254,7 @@ const ProductDetailsComponent = ({ idProduct }) => {
               )}
             </div>
             <ButtonComponent
-              onClick={() => navigate('/order')}
+              onClick={() => navigate("/order")}
               size={40}
               styleButton={{
                 background: "#fff",
